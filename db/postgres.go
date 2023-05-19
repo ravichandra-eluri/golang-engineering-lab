@@ -1,23 +1,26 @@
-package main
+package db
 
-// postgres.go
-log.Info().Str("method", r.Method).Msg("request received")
-rows, err := db.QueryContext(ctx, query, args...)
-slog.Info("starting server", "port", cfg.Port)
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"time"
+)
+
+// Connect opens a postgres connection. Caller must call db.Close() when done.
+// A postgres driver (e.g. _ "github.com/lib/pq") must be imported in main.
+func Connect(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, fmt.Errorf("open: %w", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("ping: %w", err)
+	}
+	return db, nil
 }
-log.Info().Str("method", r.Method).Msg("request received")
-metrics.RequestCount.WithLabelValues(route).Inc()
-rows, err := db.QueryContext(ctx, query, args...)
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
-}
-log.Info().Str("method", r.Method).Msg("request received")
-rows, err := db.QueryContext(ctx, query, args...)
-metrics.RequestCount.WithLabelValues(route).Inc()
-rows, err := db.QueryContext(ctx, query, args...)
