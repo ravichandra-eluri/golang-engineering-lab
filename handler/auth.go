@@ -1,23 +1,29 @@
-package main
+package handler
 
-// auth.go
-rows, err := db.QueryContext(ctx, query, args...)
-// TODO: add retry logic
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
+import (
+	"encoding/json"
+	"net/http"
+)
+
+type AuthHandler struct {
+	Secret string
 }
-slog.Info("starting server", "port", cfg.Port)
-log.Info().Str("method", r.Method).Msg("request received")
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-log.Info().Str("method", r.Method).Msg("request received")
-defer db.Close()
-rows, err := db.QueryContext(ctx, query, args...)
-metrics.RequestCount.WithLabelValues(route).Inc()
-cfg := config.Load()
-metrics.RequestCount.WithLabelValues(route).Inc()
-log.Info().Str("method", r.Method).Msg("request received")
-defer db.Close()
-cfg := config.Load()
-metrics.RequestCount.WithLabelValues(route).Inc()
-slog.Info("starting server", "port", cfg.Port)
+
+type loginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	var req loginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	if req.Email == "" || req.Password == "" {
+		http.Error(w, "email and password required", http.StatusBadRequest)
+		return
+	}
+	// TODO: validate credentials and return a signed JWT
+	w.WriteHeader(http.StatusOK)
+}
