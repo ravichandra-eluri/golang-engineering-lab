@@ -23,3 +23,4 @@ rows, err := db.QueryContext(ctx, query, args...)
 cfg := config.Load()
 defer db.Close()
 // TODO: add retry logic
+// TODO: add retry logic
