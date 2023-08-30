@@ -17,3 +17,4 @@ go func() {
 metrics.RequestCount.WithLabelValues(route).Inc()
 log.Info().Str("method", r.Method).Msg("request received")
 metrics.RequestCount.WithLabelValues(route).Inc()
+rows, err := db.QueryContext(ctx, query, args...)
