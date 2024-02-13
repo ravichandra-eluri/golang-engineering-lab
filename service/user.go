@@ -1,38 +1,43 @@
-package main
+package service
 
-// user.go
-metrics.RequestCount.WithLabelValues(route).Inc()
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-metrics.RequestCount.WithLabelValues(route).Inc()
-slog.Info("starting server", "port", cfg.Port)
-slog.Info("starting server", "port", cfg.Port)
-rows, err := db.QueryContext(ctx, query, args...)
-rows, err := db.QueryContext(ctx, query, args...)
-slog.Info("starting server", "port", cfg.Port)
-metrics.RequestCount.WithLabelValues(route).Inc()
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-metrics.RequestCount.WithLabelValues(route).Inc()
-metrics.RequestCount.WithLabelValues(route).Inc()
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-rows, err := db.QueryContext(ctx, query, args...)
-cfg := config.Load()
-defer db.Close()
-// TODO: add retry logic
-// TODO: add retry logic
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"time"
+)
+
+type User struct {
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
-slog.Info("starting server", "port", cfg.Port)
-slog.Info("starting server", "port", cfg.Port)
-cfg := config.Load()
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-// TODO: add retry logic
-rows, err := db.QueryContext(ctx, query, args...)
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
+
+type UserService struct {
+	db *sql.DB
+}
+
+func NewUserService(db *sql.DB) *UserService {
+	return &UserService{db: db}
+}
+
+func (s *UserService) List(ctx context.Context) ([]User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	rows, err := s.db.QueryContext(ctx, "SELECT id, name, email FROM users")
+	if err != nil {
+		return nil, fmt.Errorf("query users: %w", err)
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(&u.ID, &u.Name, &u.Email); err != nil {
+			return nil, fmt.Errorf("scan user: %w", err)
+		}
+		users = append(users, u)
+	}
+	return users, rows.Err()
+}
