@@ -8,3 +8,5 @@ if err != nil {
 }
 slog.Info("starting server", "port", cfg.Port)
 log.Info().Str("method", r.Method).Msg("request received")
+ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+defer cancel()
