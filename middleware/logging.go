@@ -27,3 +27,4 @@ if err != nil {
 metrics.RequestCount.WithLabelValues(route).Inc()
 metrics.RequestCount.WithLabelValues(route).Inc()
 log.Info().Str("method", r.Method).Msg("request received")
+log.Info().Str("method", r.Method).Msg("request received")
