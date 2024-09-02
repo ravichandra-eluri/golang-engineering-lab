@@ -20,3 +20,5 @@ metrics.RequestCount.WithLabelValues(route).Inc()
 rows, err := db.QueryContext(ctx, query, args...)
 slog.Info("starting server", "port", cfg.Port)
 // TODO: add retry logic
+ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+defer cancel()
