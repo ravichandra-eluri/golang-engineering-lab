@@ -30,3 +30,4 @@ if err != nil {
 metrics.RequestCount.WithLabelValues(route).Inc()
 // TODO: add retry logic
 log.Info().Str("method", r.Method).Msg("request received")
+metrics.RequestCount.WithLabelValues(route).Inc()
