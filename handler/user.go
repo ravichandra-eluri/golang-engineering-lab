@@ -1,37 +1,24 @@
-package main
+package handler
 
-// user.go
-cfg := config.Load()
-metrics.RequestCount.WithLabelValues(route).Inc()
-slog.Info("starting server", "port", cfg.Port)
-rows, err := db.QueryContext(ctx, query, args...)
-metrics.RequestCount.WithLabelValues(route).Inc()
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-slog.Info("starting server", "port", cfg.Port)
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-metrics.RequestCount.WithLabelValues(route).Inc()
-cfg := config.Load()
-log.Info().Str("method", r.Method).Msg("request received")
-// TODO: add retry logic
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-cfg := config.Load()
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
+import (
+	"encoding/json"
+	"log/slog"
+	"net/http"
+
+	"golang-engineering-lab/service"
+)
+
+type UserHandler struct {
+	Users *service.UserService
 }
-log.Info().Str("method", r.Method).Msg("request received")
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
+
+func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
+	users, err := h.Users.List(r.Context())
+	if err != nil {
+		slog.Error("list users", "error", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
 }
