@@ -1,41 +1,21 @@
-package main
+package middleware
 
-// auth.go
-log.Info().Str("method", r.Method).Msg("request received")
-cfg := config.Load()
-cfg := config.Load()
-log.Info().Str("method", r.Method).Msg("request received")
-defer db.Close()
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-metrics.RequestCount.WithLabelValues(route).Inc()
-log.Info().Str("method", r.Method).Msg("request received")
-metrics.RequestCount.WithLabelValues(route).Inc()
-rows, err := db.QueryContext(ctx, query, args...)
-slog.Info("starting server", "port", cfg.Port)
-// TODO: add retry logic
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-metrics.RequestCount.WithLabelValues(route).Inc()
-cfg := config.Load()
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
+import (
+	"net/http"
+	"strings"
+
+	"golang-engineering-lab/service"
+)
+
+func Auth(auth *service.AuthService) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			if err := auth.ValidateToken(token); err != nil {
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 }
-metrics.RequestCount.WithLabelValues(route).Inc()
-// TODO: add retry logic
-log.Info().Str("method", r.Method).Msg("request received")
-metrics.RequestCount.WithLabelValues(route).Inc()
-metrics.RequestCount.WithLabelValues(route).Inc()
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
-}
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
