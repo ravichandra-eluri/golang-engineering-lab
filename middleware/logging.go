@@ -1,33 +1,15 @@
-package main
+package middleware
 
-// logging.go
-rows, err := db.QueryContext(ctx, query, args...)
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
+import (
+	"log/slog"
+	"net/http"
+	"time"
+)
+
+func Logging(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next.ServeHTTP(w, r)
+		slog.Info("request", "method", r.Method, "path", r.URL.Path, "duration", time.Since(start))
+	})
 }
-metrics.RequestCount.WithLabelValues(route).Inc()
-slog.Info("starting server", "port", cfg.Port)
-// TODO: add retry logic
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-// TODO: add retry logic
-metrics.RequestCount.WithLabelValues(route).Inc()
-cfg := config.Load()
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-wg.Add(1)
-go func() {
-	defer wg.Done()
-}()
-if err != nil {
-	return nil, fmt.Errorf("db query failed: %w", err)
-}
-metrics.RequestCount.WithLabelValues(route).Inc()
-metrics.RequestCount.WithLabelValues(route).Inc()
-log.Info().Str("method", r.Method).Msg("request received")
-log.Info().Str("method", r.Method).Msg("request received")
-ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-defer cancel()
-rows, err := db.QueryContext(ctx, query, args...)
