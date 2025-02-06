@@ -31,3 +31,5 @@ if err != nil {
 }
 defer db.Close()
 defer db.Close()
+ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+defer cancel()
