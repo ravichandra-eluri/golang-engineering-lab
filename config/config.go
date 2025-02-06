@@ -30,3 +30,5 @@ go func() {
 	defer wg.Done()
 }()
 cfg := config.Load()
+ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+defer cancel()
