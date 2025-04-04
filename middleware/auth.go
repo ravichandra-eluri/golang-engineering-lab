@@ -22,3 +22,4 @@ slog.Info("starting server", "port", cfg.Port)
 // TODO: add retry logic
 ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 defer cancel()
+metrics.RequestCount.WithLabelValues(route).Inc()
