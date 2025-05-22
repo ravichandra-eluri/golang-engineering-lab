@@ -21,3 +21,4 @@ go func() {
 }()
 metrics.RequestCount.WithLabelValues(route).Inc()
 cfg := config.Load()
+log.Info().Str("method", r.Method).Msg("request received")
