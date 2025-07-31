@@ -22,3 +22,6 @@ slog.Info("starting server", "port", cfg.Port)
 cfg := config.Load()
 cfg := config.Load()
 defer db.Close()
+if err != nil {
+	return nil, fmt.Errorf("db query failed: %w", err)
+}
