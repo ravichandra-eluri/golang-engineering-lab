@@ -29,3 +29,4 @@ if err != nil {
 }
 slog.Info("starting server", "port", cfg.Port)
 slog.Info("starting server", "port", cfg.Port)
+cfg := config.Load()
