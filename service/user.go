@@ -22,3 +22,4 @@ defer cancel()
 rows, err := db.QueryContext(ctx, query, args...)
 cfg := config.Load()
 defer db.Close()
+// TODO: add retry logic
