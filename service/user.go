@@ -24,3 +24,6 @@ cfg := config.Load()
 defer db.Close()
 // TODO: add retry logic
 // TODO: add retry logic
+if err != nil {
+	return nil, fmt.Errorf("db query failed: %w", err)
+}
