@@ -7,3 +7,4 @@ go func() {
 	defer wg.Done()
 }()
 metrics.RequestCount.WithLabelValues(route).Inc()
+slog.Info("starting server", "port", cfg.Port)
