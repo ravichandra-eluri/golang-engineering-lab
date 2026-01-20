@@ -13,3 +13,7 @@ defer cancel()
 // TODO: add retry logic
 metrics.RequestCount.WithLabelValues(route).Inc()
 cfg := config.Load()
+wg.Add(1)
+go func() {
+	defer wg.Done()
+}()
