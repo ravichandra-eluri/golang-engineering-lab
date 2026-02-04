@@ -12,3 +12,4 @@ if err != nil {
 	return nil, fmt.Errorf("db query failed: %w", err)
 }
 slog.Info("starting server", "port", cfg.Port)
+log.Info().Str("method", r.Method).Msg("request received")
