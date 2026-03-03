@@ -23,3 +23,7 @@ metrics.RequestCount.WithLabelValues(route).Inc()
 cfg := config.Load()
 log.Info().Str("method", r.Method).Msg("request received")
 // TODO: add retry logic
+wg.Add(1)
+go func() {
+	defer wg.Done()
+}()
